@@ -1,20 +1,17 @@
+"use client";
+
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { CarCard } from "@/components/CarCard";
 import { cars, brands, fuels } from "@/lib/cars";
 
-type SearchParams = {
-  brand?: string;
-  fuel?: string;
-  max?: string;
-  year?: string;
-  q?: string;
-};
-
-export default function InventarioPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const { brand, fuel, max, year, q } = searchParams;
+function InventarioContent() {
+  const sp = useSearchParams();
+  const brand = sp.get("brand") ?? "";
+  const fuel = sp.get("fuel") ?? "";
+  const max = sp.get("max") ?? "";
+  const year = sp.get("year") ?? "";
+  const q = sp.get("q") ?? "";
 
   const filtered = cars.filter((c) => {
     if (brand && c.brand !== brand) return false;
@@ -44,21 +41,20 @@ export default function InventarioPage({
       </section>
 
       <section className="container-x grid gap-10 py-12 lg:grid-cols-[260px_1fr]">
-        {/* Filters */}
         <aside className="card h-fit p-6 lg:sticky lg:top-28">
           <form className="space-y-5">
             <div>
               <label className="label">Pesquisar</label>
               <input
                 name="q"
-                defaultValue={q ?? ""}
+                defaultValue={q}
                 placeholder="Ex: Golf, BMW..."
                 className="field mt-2"
               />
             </div>
             <div>
               <label className="label">Marca</label>
-              <select name="brand" defaultValue={brand ?? ""} className="field mt-2">
+              <select name="brand" defaultValue={brand} className="field mt-2">
                 <option value="">Todas</option>
                 {brands.map((b) => (
                   <option key={b} value={b}>{b}</option>
@@ -67,7 +63,7 @@ export default function InventarioPage({
             </div>
             <div>
               <label className="label">Combustível</label>
-              <select name="fuel" defaultValue={fuel ?? ""} className="field mt-2">
+              <select name="fuel" defaultValue={fuel} className="field mt-2">
                 <option value="">Todos</option>
                 {fuels.map((f) => (
                   <option key={f} value={f}>{f}</option>
@@ -76,7 +72,7 @@ export default function InventarioPage({
             </div>
             <div>
               <label className="label">Preço máximo</label>
-              <select name="max" defaultValue={max ?? ""} className="field mt-2">
+              <select name="max" defaultValue={max} className="field mt-2">
                 <option value="">Qualquer</option>
                 <option value="15000">até 15.000 €</option>
                 <option value="25000">até 25.000 €</option>
@@ -86,7 +82,7 @@ export default function InventarioPage({
             </div>
             <div>
               <label className="label">Ano desde</label>
-              <select name="year" defaultValue={year ?? ""} className="field mt-2">
+              <select name="year" defaultValue={year} className="field mt-2">
                 <option value="">Qualquer</option>
                 <option>2018</option>
                 <option>2020</option>
@@ -97,7 +93,7 @@ export default function InventarioPage({
               Aplicar filtros
             </button>
             <a
-              href="/inventario"
+              href="?"
               className="block text-center text-xs text-ink-400 hover:text-white"
             >
               Limpar filtros
@@ -105,7 +101,6 @@ export default function InventarioPage({
           </form>
         </aside>
 
-        {/* Results */}
         <div>
           {filtered.length === 0 ? (
             <div className="card p-12 text-center">
@@ -127,5 +122,17 @@ export default function InventarioPage({
         </div>
       </section>
     </>
+  );
+}
+
+export default function InventarioPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container-x py-20 text-ink-400">A carregar…</div>
+      }
+    >
+      <InventarioContent />
+    </Suspense>
   );
 }
