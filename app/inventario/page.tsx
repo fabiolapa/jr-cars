@@ -1,17 +1,20 @@
-"use client";
-
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { CarCard } from "@/components/CarCard";
 import { cars, brands, fuels } from "@/lib/cars";
 
-function InventarioContent() {
-  const sp = useSearchParams();
-  const brand = sp.get("brand") ?? "";
-  const fuel = sp.get("fuel") ?? "";
-  const max = sp.get("max") ?? "";
-  const year = sp.get("year") ?? "";
-  const q = sp.get("q") ?? "";
+type SearchParams = {
+  brand?: string;
+  fuel?: string;
+  max?: string;
+  year?: string;
+  q?: string;
+};
+
+export default function InventarioPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { brand, fuel, max, year, q } = searchParams;
 
   const filtered = cars.filter((c) => {
     if (brand && c.brand !== brand) return false;
@@ -47,14 +50,14 @@ function InventarioContent() {
               <label className="label">Pesquisar</label>
               <input
                 name="q"
-                defaultValue={q}
+                defaultValue={q ?? ""}
                 placeholder="Ex: Golf, BMW..."
                 className="field mt-2"
               />
             </div>
             <div>
               <label className="label">Marca</label>
-              <select name="brand" defaultValue={brand} className="field mt-2">
+              <select name="brand" defaultValue={brand ?? ""} className="field mt-2">
                 <option value="">Todas</option>
                 {brands.map((b) => (
                   <option key={b} value={b}>{b}</option>
@@ -63,7 +66,7 @@ function InventarioContent() {
             </div>
             <div>
               <label className="label">Combustível</label>
-              <select name="fuel" defaultValue={fuel} className="field mt-2">
+              <select name="fuel" defaultValue={fuel ?? ""} className="field mt-2">
                 <option value="">Todos</option>
                 {fuels.map((f) => (
                   <option key={f} value={f}>{f}</option>
@@ -72,7 +75,7 @@ function InventarioContent() {
             </div>
             <div>
               <label className="label">Preço máximo</label>
-              <select name="max" defaultValue={max} className="field mt-2">
+              <select name="max" defaultValue={max ?? ""} className="field mt-2">
                 <option value="">Qualquer</option>
                 <option value="15000">até 15.000 €</option>
                 <option value="25000">até 25.000 €</option>
@@ -82,7 +85,7 @@ function InventarioContent() {
             </div>
             <div>
               <label className="label">Ano desde</label>
-              <select name="year" defaultValue={year} className="field mt-2">
+              <select name="year" defaultValue={year ?? ""} className="field mt-2">
                 <option value="">Qualquer</option>
                 <option>2018</option>
                 <option>2020</option>
@@ -93,7 +96,7 @@ function InventarioContent() {
               Aplicar filtros
             </button>
             <a
-              href="?"
+              href="/inventario"
               className="block text-center text-xs text-ink-400 hover:text-white"
             >
               Limpar filtros
@@ -122,17 +125,5 @@ function InventarioContent() {
         </div>
       </section>
     </>
-  );
-}
-
-export default function InventarioPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="container-x py-20 text-ink-400">A carregar…</div>
-      }
-    >
-      <InventarioContent />
-    </Suspense>
   );
 }
